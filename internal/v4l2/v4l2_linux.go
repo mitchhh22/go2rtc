@@ -39,7 +39,11 @@ func apiV4L2(w http.ResponseWriter, r *http.Request) {
 
 		path := "/dev/" + file.Name()
 
-		dev, err := device.Open(path)
+		realDevice, err := filepath.EvalSymlinks(path)
+		if err != nil {
+			realDevice = path // fallback to original if error
+		}
+		dev, err := device.Open(realDevice)
 		if err != nil {
 			continue
 		}
